@@ -1,0 +1,92 @@
+---
+
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<h1>Bulk headers edit</h1>
+    <form>
+      <textarea id="json-input" placeholder="json"></textarea>
+      <button type="submit">Convert</button>
+      <textarea id="output-textarea" placeholder="result" readonly></textarea>
+    </form>
+    <button id="copy-button">Copy result</button>
+	</body>
+  <script>
+    const jsonInputTextarea = document.getElementById("json-input") as HTMLTextAreaElement;
+    const outputTextarea = document.getElementById("output-textarea") as HTMLTextAreaElement;
+    const copyButton = document.getElementById("copy-button");
+    const formElement = document.querySelector('form');
+
+    function convertToHeaders (json: object) {
+      let result = '';
+      Object.entries(json).map(([key, value]) => {
+        result += `${key}:${value}\n`;
+      });
+      return result;
+    }
+
+    function copyToClipboard (text: string) {
+      outputTextarea.select();
+      outputTextarea.setSelectionRange(0, 99999); // For mobile devices
+
+      navigator.clipboard.writeText(text);
+      copyButton && (copyButton.innerHTML = "Copied!")
+
+      setTimeout(() => {
+        copyButton && (copyButton.innerHTML = "Copy result")
+      }, 2000);
+    }
+
+    formElement?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      try {
+        const jsonInput = jsonInputTextarea?.value;
+        if (!jsonInput) return;
+
+        const json = JSON.parse(jsonInput);
+        const output = convertToHeaders(json);
+        outputTextarea.value = output;
+      } catch (e) {
+        console.error(e);
+      }
+    })
+
+    copyButton?.addEventListener("click", () => {
+      const text = outputTextarea.value;
+      copyToClipboard(text);
+    })
+  </script>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+    form {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    textarea {
+      border: 2px solid black;
+      border-radius: 5px;
+      min-height: 300px;
+      height: 60vh;
+      min-width: 500px;
+    }
+    button {
+      max-width: 500px;
+    }
+  </style>
+</html>

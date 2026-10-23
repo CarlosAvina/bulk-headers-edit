@@ -16,4 +16,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            sh ~/code/deploy/bulkheaders.sh
+            set -e
+            cd ~/code/bulk-headers-edit
+            git pull --ff-only origin main
+            bash scripts/deploy.sh
